@@ -24,7 +24,7 @@ window.onunhandledrejection = event => body.appendChild(createDiv(event.toString
 (() => __awaiter(void 0, void 0, void 0, function* () {
     let context;
     try {
-        body.appendChild(createDiv('please click'));
+        body.appendChild(createDiv('please click!'));
         {
             context = yield new Promise(resolve => {
                 window.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {

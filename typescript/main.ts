@@ -21,7 +21,7 @@ window.onunhandledrejection = event => body.appendChild(createDiv(event.toString
 (async () => {
     let context
     try {
-        body.appendChild(createDiv('please click'))
+        body.appendChild(createDiv('please click!'))
         {
             context = await new Promise<AudioContext>(resolve => {
                 window.addEventListener('click', async () => {
