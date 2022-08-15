@@ -19,7 +19,7 @@ const createSpan = (text) => {
     return span;
 };
 const body = document.querySelector("body");
-body.appendChild(createDiv('v0.02'));
+body.appendChild(createDiv('v0.03'));
 window.onerror = event => body.appendChild(createDiv(event.toString()));
 window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toString()} : ${event.reason}`));
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -28,12 +28,14 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
         body.appendChild(createDiv('please click!'));
         {
             context = yield new Promise(resolve => {
-                window.addEventListener('pointerdown', () => __awaiter(void 0, void 0, void 0, function* () {
-                    body.appendChild(createDiv('get user-media permission'));
-                    yield navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-                    body.appendChild(createDiv('got user-media permission'));
-                    resolve(new AudioContext());
-                }), { once: true });
+                window.addEventListener('pointerdown', () => {
+                    body.appendChild(createDiv('waiting for user-media permission'));
+                    const context = new AudioContext();
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(() => {
+                        body.appendChild(createDiv('got user-media permission'));
+                        resolve(context);
+                    });
+                }, { once: true });
             });
         }
         {

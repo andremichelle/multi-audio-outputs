@@ -14,7 +14,7 @@ const createSpan = (text: string): HTMLSpanElement => {
 }
 
 const body = document.querySelector("body")!
-body.appendChild(createDiv('v0.02'))
+body.appendChild(createDiv('v0.03'))
 window.onerror = event => body.appendChild(createDiv(event.toString()))
 window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toString()} : ${event.reason}`))
 
@@ -25,11 +25,13 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
         body.appendChild(createDiv('please click!'))
         {
             context = await new Promise<AudioContext>(resolve => {
-                window.addEventListener('pointerdown', async () => {
-                    body.appendChild(createDiv('get user-media permission'))
-                    await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                    body.appendChild(createDiv('got user-media permission'))
-                    resolve(new AudioContext())
+                window.addEventListener('pointerdown', () => {
+                    body.appendChild(createDiv('waiting for user-media permission'))
+                    const context = new AudioContext()
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(() => {
+                        body.appendChild(createDiv('got user-media permission'))
+                        resolve(context)
+                    })
                 }, { once: true })
             })
         }
