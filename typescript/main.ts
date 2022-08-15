@@ -26,7 +26,7 @@ window.onunhandledrejection = event => body.appendChild(createDiv(event.toString
             context = await new Promise<AudioContext>(resolve => {
                 window.addEventListener('click', async () => {
                     body.appendChild(createDiv('get user-media permission'))
-                    await navigator.mediaDevices.getUserMedia({ audio: true })
+                    await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
                     body.appendChild(createDiv('got user-media permission'))
                     resolve(new AudioContext())
                 }, { once: true })
