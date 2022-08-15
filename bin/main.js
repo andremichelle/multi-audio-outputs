@@ -81,7 +81,7 @@ window.onunhandledrejection = event => body.appendChild(createDiv(event.toString
         }));
     }
     catch (reason) {
-        body.appendChild(createDiv(`${reason}`));
+        body.appendChild(createDiv(`${reason instanceof PromiseRejectionEvent ? reason.reason : reason}`));
     }
 }))();
 //# sourceMappingURL=main.js.map
