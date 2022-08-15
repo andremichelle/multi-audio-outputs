@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "removeComments": true,
+    "outDir": "../bin/",
+    "sourceMap": true,
+    "lib": [
+      "es2020",
+      "DOM"
+    ],
+    "strict": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": []
+}
