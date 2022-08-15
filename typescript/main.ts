@@ -14,6 +14,7 @@ const createSpan = (text: string): HTMLSpanElement => {
 }
 
 const body = document.querySelector("body")!
+body.appendChild(createDiv('v0.01'))
 window.onerror = event => body.appendChild(createDiv(event.toString()))
 window.onunhandledrejection = event => body.appendChild(createDiv(event.toString()))
 

@@ -19,6 +19,7 @@ const createSpan = (text) => {
     return span;
 };
 const body = document.querySelector("body");
+body.appendChild(createDiv('v0.01'));
 window.onerror = event => body.appendChild(createDiv(event.toString()));
 window.onunhandledrejection = event => body.appendChild(createDiv(event.toString()));
 (() => __awaiter(void 0, void 0, void 0, function* () {
