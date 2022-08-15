@@ -19,20 +19,22 @@ const createSpan = (text) => {
     return span;
 };
 const body = document.querySelector("body");
-body.appendChild(createDiv('v0.03'));
+body.appendChild(createDiv('v0.04'));
 window.onerror = event => body.appendChild(createDiv(event.toString()));
 window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toString()} : ${event.reason}`));
 (() => __awaiter(void 0, void 0, void 0, function* () {
     let context;
     try {
-        body.appendChild(createDiv('please click!'));
+        body.appendChild(createDiv('please click...'));
         {
             context = yield new Promise(resolve => {
                 window.addEventListener('pointerdown', () => {
                     body.appendChild(createDiv('waiting for user-media permission'));
                     const context = new AudioContext();
-                    navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(() => {
-                        body.appendChild(createDiv('got user-media permission'));
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                        .then((stream) => {
+                        stream.getTracks().forEach(track => track.stop());
+                        body.appendChild(createDiv(`got user-media permission > id: ${stream === null || stream === void 0 ? void 0 : stream.id}`));
                         resolve(context);
                     });
                 }, { once: true });
@@ -43,10 +45,10 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
             const div = document.createElement('div');
             div.classList.add('devices');
             devices.forEach((device) => {
-                div.appendChild(createSpan(device.label));
-                div.appendChild(createSpan(device.kind));
-                div.appendChild(createSpan(device.deviceId));
-                div.appendChild(createSpan(device.groupId));
+                div.appendChild(createSpan(`label(${device.label})`));
+                div.appendChild(createSpan(`kind(${device.kind})`));
+                div.appendChild(createSpan(`deviceId(${device.deviceId})`));
+                div.appendChild(createSpan(`groupId(${device.groupId})`));
                 const input = document.createElement('input');
                 input.type = "radio";
                 input.name = "device";
@@ -74,8 +76,6 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
                 const deviceId = input.value;
                 body.appendChild(createDiv(`setSinkId(${deviceId})`));
                 input.disabled = true;
-                const result = yield audio.setSinkId(deviceId);
-                body.appendChild(createDiv(`sink result: ${result}`));
                 audio.srcObject = destination.stream;
                 yield audio.play();
                 body.appendChild(createDiv(`channelCount: ${destination.channelCount}`));

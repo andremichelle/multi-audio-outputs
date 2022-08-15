@@ -14,7 +14,7 @@ const createSpan = (text: string): HTMLSpanElement => {
 }
 
 const body = document.querySelector("body")!
-body.appendChild(createDiv('v0.03'))
+body.appendChild(createDiv('v0.04'))
 window.onerror = event => body.appendChild(createDiv(event.toString()))
 window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toString()} : ${event.reason}`))
 
@@ -22,16 +22,18 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
 (async () => {
     let context
     try {
-        body.appendChild(createDiv('please click!'))
+        body.appendChild(createDiv('please click...'))
         {
             context = await new Promise<AudioContext>(resolve => {
                 window.addEventListener('pointerdown', () => {
                     body.appendChild(createDiv('waiting for user-media permission'))
                     const context = new AudioContext()
-                    navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(() => {
-                        body.appendChild(createDiv('got user-media permission'))
-                        resolve(context)
-                    })
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                        .then((stream: MediaStream) => {
+                            stream.getTracks().forEach(track => track.stop()) // we do not need this stream at all
+                            body.appendChild(createDiv(`got user-media permission > id: ${stream?.id}`))
+                            resolve(context)
+                        })
                 }, { once: true })
             })
         }
@@ -40,10 +42,10 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
             const div = document.createElement('div')
             div.classList.add('devices')
             devices.forEach((device: MediaDeviceInfo) => {
-                div.appendChild(createSpan(device.label))
-                div.appendChild(createSpan(device.kind))
-                div.appendChild(createSpan(device.deviceId))
-                div.appendChild(createSpan(device.groupId))
+                div.appendChild(createSpan(`label(${device.label})`))
+                div.appendChild(createSpan(`kind(${device.kind})`))
+                div.appendChild(createSpan(`deviceId(${device.deviceId})`))
+                div.appendChild(createSpan(`groupId(${device.groupId})`))
                 const input = document.createElement('input')
                 input.type = "radio"
                 input.name = "device"
@@ -76,9 +78,10 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
                 const deviceId = input.value
                 body.appendChild(createDiv(`setSinkId(${deviceId})`))
                 input.disabled = true
-                const result = await audio.setSinkId(deviceId)
-                body.appendChild(createDiv(`sink result: ${result}`))
+                // const result = await audio.setSinkId(deviceId)
+                // body.appendChild(createDiv(`sink result: ${result}`))
                 audio.srcObject = destination.stream
+                // audio.src = URL.createObjectURL(destination.stream as unknown as MediaSource)
                 await audio.play()
                 body.appendChild(createDiv(`channelCount: ${destination.channelCount}`))
                 input.disabled = true
