@@ -75,15 +75,16 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
         document.addEventListener('change', async event => {
             const input: HTMLInputElement = event.target as HTMLInputElement
             if (input.matches('input[type=radio][name=device]')) {
-                const deviceId = input.value
-                body.appendChild(createDiv(`setSinkId(${deviceId})`))
                 input.disabled = true
+                const deviceId = input.value
+                body.appendChild(createDiv(`setDeviceId(${deviceId})`))
                 // const result = await audio.setSinkId(deviceId)
                 // body.appendChild(createDiv(`sink result: ${result}`))
                 audio.srcObject = destination.stream
-                // audio.src = URL.createObjectURL(destination.stream as unknown as MediaSource)
                 await audio.play()
+                body.appendChild(createDiv(`paused: ${audio.paused}`))
                 body.appendChild(createDiv(`channelCount: ${destination.channelCount}`))
+
                 input.disabled = true
             }
         })
