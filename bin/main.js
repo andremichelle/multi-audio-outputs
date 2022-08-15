@@ -29,7 +29,7 @@ window.onunhandledrejection = event => body.appendChild(createDiv(event.toString
             context = yield new Promise(resolve => {
                 window.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
                     body.appendChild(createDiv('get user-media permission'));
-                    yield navigator.mediaDevices.getUserMedia({ audio: true });
+                    yield navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                     body.appendChild(createDiv('got user-media permission'));
                     resolve(new AudioContext());
                 }), { once: true });
