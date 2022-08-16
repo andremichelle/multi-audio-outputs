@@ -14,9 +14,20 @@ const createSpan = (text: string): HTMLSpanElement => {
 }
 
 const body = document.querySelector("body")!
-body.appendChild(createDiv('v0.06'))
+body.appendChild(createDiv('v0.07'))
 window.onerror = event => body.appendChild(createDiv(event.toString()))
 window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toString()} : ${event.reason}`))
+
+const createScene = (context: AudioContext): ChannelMergerNode => {
+    const merger = context.createChannelMerger(4)
+    for (let i = 0; i < 4; i++) {
+        const osc = context.createOscillator()
+        osc.frequency.value = 333 * (1 << i)
+        osc.connect(merger, 0, i)
+        osc.start()
+    }
+    return merger
+}
 
     ;
 (async () => {
@@ -32,8 +43,16 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
         body.appendChild(createDiv(`state: ${context.state}`))
         const destination = context.destination
         destination.channelCount = Math.min(4, destination.maxChannelCount)
+        destination.channelCountMode = 'explicit'
+        destination.channelInterpretation = 'discrete'
         body.appendChild(createDiv(`channelCount: ${destination.channelCount}`))
         body.appendChild(createDiv(`maxChannelCount: ${destination.maxChannelCount}`))
+
+        if (destination.channelCount === 4) {
+            body.appendChild(createDiv(`connect...`))
+            createScene(context).connect(destination)
+            return
+        }
 
         {
             body.appendChild(createDiv('Please click to request user-media...'))
@@ -75,15 +94,7 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
         streamDestination.channelCountMode = "explicit"
         streamDestination.channelInterpretation = "discrete"
 
-        const merger = context.createChannelMerger(4)
-        merger.connect(streamDestination)
-
-        for (let i = 0; i < 4; i++) {
-            const osc = context.createOscillator()
-            osc.frequency.value = 333 * (1 << i)
-            osc.connect(merger, 0, i)
-            osc.start()
-        }
+        createScene(context).connect(streamDestination)
 
         document.addEventListener('change', async event => {
             const input: HTMLInputElement = event.target as HTMLInputElement
