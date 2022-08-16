@@ -31,8 +31,10 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
         }
         body.appendChild(createDiv(`AudioContext created.`));
         body.appendChild(createDiv(`state: ${context.state}`));
-        body.appendChild(createDiv(`channelCount: ${context.destination.channelCount}`));
-        body.appendChild(createDiv(`maxChannelCount: ${context.destination.maxChannelCount}`));
+        const destination = context.destination;
+        destination.channelCount = Math.min(4, destination.maxChannelCount);
+        body.appendChild(createDiv(`channelCount: ${destination.channelCount}`));
+        body.appendChild(createDiv(`maxChannelCount: ${destination.maxChannelCount}`));
         {
             body.appendChild(createDiv('Please click to request user-media...'));
             yield new Promise(resolve => {
@@ -66,12 +68,12 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
             body.appendChild(div);
         }
         const audio = new Audio();
-        const destination = context.createMediaStreamDestination();
-        destination.channelCount = 4;
-        destination.channelCountMode = "explicit";
-        destination.channelInterpretation = "discrete";
+        const streamDestination = context.createMediaStreamDestination();
+        streamDestination.channelCount = 4;
+        streamDestination.channelCountMode = "explicit";
+        streamDestination.channelInterpretation = "discrete";
         const merger = context.createChannelMerger(4);
-        merger.connect(destination);
+        merger.connect(streamDestination);
         for (let i = 0; i < 4; i++) {
             const osc = context.createOscillator();
             osc.frequency.value = 333 * (1 << i);
@@ -84,10 +86,10 @@ window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toStr
                 input.disabled = true;
                 const deviceId = input.value;
                 body.appendChild(createDiv(`setDeviceId(${deviceId})`));
-                audio.srcObject = destination.stream;
+                audio.srcObject = streamDestination.stream;
                 yield audio.play();
                 body.appendChild(createDiv(`paused: ${audio.paused}`));
-                body.appendChild(createDiv(`channelCount: ${destination.channelCount}`));
+                body.appendChild(createDiv(`channelCount: ${streamDestination.channelCount}`));
                 input.disabled = true;
             }
         }));
