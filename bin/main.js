@@ -19,28 +19,36 @@ const createSpan = (text) => {
     return span;
 };
 const body = document.querySelector("body");
-body.appendChild(createDiv('v0.05'));
+body.appendChild(createDiv('v0.06'));
 window.onerror = event => body.appendChild(createDiv(event.toString()));
 window.onunhandledrejection = event => body.appendChild(createDiv(`${event.toString()} : ${event.reason}`));
 (() => __awaiter(void 0, void 0, void 0, function* () {
     let context;
     try {
-        body.appendChild(createDiv('please click...'));
         {
-            context = yield new Promise(resolve => {
+            body.appendChild(createDiv('Please click to create an AudioContext...'));
+            context = yield new Promise(resolve => window.addEventListener('pointerdown', () => resolve(new AudioContext()), { once: true }));
+        }
+        body.appendChild(createDiv(`AudioContext created.`));
+        body.appendChild(createDiv(`state: ${context.state}`));
+        body.appendChild(createDiv(`channelCount: ${context.destination.channelCount}`));
+        body.appendChild(createDiv(`maxChannelCount: ${context.destination.maxChannelCount}`));
+        {
+            body.appendChild(createDiv('Please click to request user-media...'));
+            yield new Promise(resolve => {
                 window.addEventListener('pointerdown', () => {
                     body.appendChild(createDiv('waiting for user-media permission'));
-                    const context = new AudioContext();
                     navigator.mediaDevices.getUserMedia({ audio: true, video: false })
                         .then((stream) => {
                         stream.getTracks().forEach(track => track.stop());
-                        body.appendChild(createDiv(`got user-media permission > id: ${stream === null || stream === void 0 ? void 0 : stream.id}`));
-                        resolve(context);
+                        body.appendChild(createDiv(`got user-media permission`));
+                        resolve();
                     });
                 }, { once: true });
             });
         }
         {
+            body.appendChild(createDiv('Now listing all media devices...'));
             const devices = yield navigator.mediaDevices.enumerateDevices();
             const div = document.createElement('div');
             div.classList.add('devices');
